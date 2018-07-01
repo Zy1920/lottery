@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <script src="js/jquery-1.12.4.min.js" th:src="@{/js/jquery-1.12.4.min.js}"></script>
+    <script src="js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+    <style>
+       .title{
+           left: 0px;
+           top: 23px;
+           width: 360px;
+           height: 55px;
+           font-size: 18px;
+           text-align: center;
+           font-family: Microsoft Yahei;
+           background-color: lightgray;
+           line-height: 55px;
+       }
+
+        .ball-blue{
+            color: blue;
+        }
+
+        .ball-red{
+            color: red;
+        }
+
+
+
+        .foot{
+            text-align: center;
+            background-color: lightgray;
+            position: fixed;
+            left: 0px;
+            bottom: 0px;
+            width: 100%;
+        }
+
+       .ball-item{
+           width: 30px;
+           height: 30px;
+           line-height: 30px;
+           font-size: 14px;
+           text-align: center;
+           font-family: Roboto;
+           border: 1px solid rgba(187, 187, 187, 1);
+           border-radius: 100px;
+           display: inline-block;
+           margin-right: 5px;
+       }
+
+    </style>
+
+</head>
+<body>
+    <div class="container-fluid">
+        <!--标题-->
+        <div class="row title" style="background-color: lightpink">
+            <div class="col-xs-12">
+                <div style="float: left" onclick=history.back()>&lt;返回</div>
+                双色球
+            </div>
+        </div>
+
+        <!--订单详情-->
+        <div class="row" style="margin-top: 10px;font-size: 16px">
+            订单详情：
+        </div>
+
+        <!--选号信息-->
+        <div class="row" style="border: 1px solid darkgray;margin-top: 5px" th:each="orderItem:${order.orderItems}">
+            <div class="col-xs-1" style="margin-top: 18px;padding-left: 5px;padding-right: 0px">
+
+            </div>
+            <div class="col-xs-10" style="padding-top: 10px;padding-right: 0px">
+                <div class="row" style="margin-right: 0px">
+                    <div class="ball-item ball-red" th:text="${orderItem.red.split(',')[0]}">01</div>
+                    <div class="ball-item ball-red" th:text="${orderItem.red.split(',')[1]}">11</div>
+                    <div class="ball-item ball-red" th:text="${orderItem.red.split(',')[2]}">23</div>
+                    <div class="ball-item ball-red" th:text="${orderItem.red.split(',')[3]}">14</div>
+                    <div class="ball-item ball-red" th:text="${orderItem.red.split(',')[4]}">15</div>
+                    <div class="ball-item ball-red" th:text="${orderItem.red.split(',')[5]}">21</div>
+                    <div class="ball-item ball-blue" th:text="${orderItem.blue}">06</div>
+                </div>
+                <div style="margin-top: 5px;font-size: 14px" th:text="|单式${orderItem.count}注 ${orderItem.count*2}元|">单式1注 2元</div>
+            </div>
+            <div class="col-xs-1" style="margin-top: 18px;padding-left: 0px">
+
+            </div>
+        </div>
+
+
+
+        <!--支付方式-->
+        <div class="row" style="margin-top:120px;border: 1px solid lightgray;font-size: 18px;padding-top: 5px;padding-bottom: 5px">
+            <div class="col-xs-9" >
+                微信支付
+            </div>
+            <div class="col-xs-3" >
+                <input type="radio" name="payway">
+            </div>
+        </div>
+        <div class="row" style="border: 1px solid lightgray;font-size: 18px;padding-top: 5px;padding-bottom: 5px">
+            <div class="col-xs-9" >
+                黑马币支付
+            </div>
+            <div class="col-xs-3" >
+                <input type="radio" name="payway">
+            </div>
+        </div>
+        <div class="row" style="border: 1px solid lightgray;font-size: 18px;padding-top: 5px;padding-bottom: 5px">
+            <div class="col-xs-9" >
+                支付宝支付
+            </div>
+            <div class="col-xs-3" >
+                <input type="radio" name="payway">
+            </div>
+        </div>
+
+
+        <!--空白占位栏-->
+        <div style="margin-top: 60px"></div>
+
+        <!--底部菜单栏-->
+        <div class="foot " style="height: 50px;line-height: 50px;background-color: lightpink">
+            <div class="col-xs-12" th:text="|立即付款${order.total}元|" onclick="location.href='/order/success'" >
+                立即付款12元
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

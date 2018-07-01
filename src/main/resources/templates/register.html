@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <script src="js/jquery-1.12.4.min.js" th:src="@{/js/jquery-1.12.4.min.js}"></script>
+    <script src="js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+    <style>
+        .title{
+            left: 0px;
+            top: 23px;
+            width: 360px;
+            height: 55px;
+            color: rgba(16, 16, 16, 1);
+            font-size: 18px;
+            text-align: center;
+            font-family: Microsoft Yahei;
+            background-color: lightgray;
+            line-height: 55px;
+        }
+    </style>
+    <script>
+        function tiaozhuan(path) {
+            location.href=path;
+        }
+    </script>
+</head>
+<body>
+    <div class="container-fluid">
+        <!--标题-->
+        <div class="row title" style="background-color: lightpink">
+            <div class="col-xs-12">
+               注册
+            </div>
+        </div>
+
+        <!--注册页面-->
+        <div class="row">
+            <div class="col-xs-1"></div>
+            <div class="col-xs-10">
+                <!--导航条-->
+                <div class="row" style="margin-top: 20px;text-align: center">
+                    <div class="col-xs-6" onclick="tiaozhuan('/user/logUI')">登陆</div>
+                    <div class="col-xs-6" style="color: red">注册</div>
+                </div>
+
+                <!--分割线-->
+                <hr style="border: 2px solid lightgray"/>
+
+                <!--登陆框:邮箱 密码 昵称-->
+                <form action="/user/add" method="post">
+                    <div class="form-group">
+                        <input type="text" name="email" class="form-control"placeholder="请输入邮箱...">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" name="password" class="form-control" placeholder="请输入密码...">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="username" class="form-control" placeholder="请输入昵称...">
+                    </div>
+
+                    <div class="row form-group">
+                        <div class="col-xs-8">
+                            <input type="text" name="mobile" id="mobile_send" class="form-control"placeholder="请输入手机号码...">
+                        </div>
+                        <div class="col-xs-4">
+                            <input type="button" class="form-control" value="发送" id="btnSend">
+                        </div>
+                        <script>
+                            $(function () {
+                                $("#btnSend").click(function () {
+                                    var url="/user/smsSend"
+                                    var mobileValue=$("#mobile_send").val()
+                                    $.get(url,{mobile:mobileValue},function (data) {
+
+                                    })
+                                })
+                            })
+
+
+                        </script>
+
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" name="code" class="form-control" placeholder="请输入验证码...">
+                    </div>
+
+                    <div class="row form-group">
+                        <div class="col-xs-8"></div>
+                        <div class="col-xs-4" >
+                            <input type="submit" class="form-control" value="注册" style="background-color: lightpink">
+                        </div>
+
+                    </div>
+                </form>
+
+                <!--页尾 已有账号 去登陆-->
+                <div >
+                    <p>已有账号？&nbsp|&nbsp<span style="color: red" onclick="tiaozhuan('/user/logUI')">去登陆</span></p>
+                </div>
+
+                <div th:text="${msg}" style="color: red"></div>
+
+            </div>
+            <div class="col-xs-1"></div>
+        </div>
+    </div>
+</body>
+</html>

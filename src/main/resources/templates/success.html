@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <script src="js/jquery-1.12.4.min.js" th:src="@{/js/jquery-1.12.4.min.js}"></script>
+    <script src="js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+</head>
+<body>
+<div class="container-fluid" style="background: lightpink">
+    <div class="row text-center" >
+        <div class="col-xs-12 title "><h3>假装支付成功了界面</h3></div>
+    </div>
+
+
+    <div style="margin-top: 150px;">
+        <img th:src="|@{/get}${session.user.headimg}|" class="img-thumbnail center-block">
+    </div>
+
+    <div  class="text-center" style="margin-top: 160px">
+        <a onclick="location.href='/'">返回首页继续浏览</a>
+        <h4>鞠躬 致谢</h4>
+    </div>
+
+</div>
+</body>
+</html>

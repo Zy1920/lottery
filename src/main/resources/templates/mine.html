@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <script src="js/jquery-1.12.4.min.js" th:src="@{/js/jquery-1.12.4.min.js}"></script>
+    <script src="js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+    <style>
+        .title{
+            left: 0px;
+            top: 23px;
+            width: 360px;
+            height: 55px;
+            color: rgba(16, 16, 16, 1);
+            font-size: 18px;
+            text-align: center;
+            font-family: Microsoft Yahei;
+            background-color: lightgray;
+            line-height: 55px;
+        }
+        .ball-item{
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            color: rgba(229, 28, 35, 1);
+            font-size: 14px;
+            text-align: center;
+            font-family: Roboto;
+            border: 1px solid rgba(187, 187, 187, 1);
+            border-radius: 100px;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .ball-blue{
+            color: blue;
+        }
+
+        .foot{
+            text-align: center;
+            background-color: lightgray;
+            position: fixed;
+            left: 0px;
+            bottom: 0px;
+            width: 100%;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!--标题-->
+        <div class="row title" style="background-color: lightpink">
+            <div style="position: absolute;" onclick="history.back()">&lt;返回</div>
+               黑马彩票
+        </div>
+
+        <!--个人信息栏-->
+        <div class="row" style="height: 120px;margin-top: 20px">
+            <div class="col-xs-4" onclick="tiaozhuan('/user/touxiangUI')">
+                <div >
+                    <img class="img-circle" style="width: 100px;height: 100px" th:src="|@{/get}${session.user.headimg}|" src="img/1.jpg" >
+                </div>
+            </div>
+            <div class="col-xs-8">
+                <div class="row" style="font-size: 20px;font-weight: bold;margin-top: 20px" th:text="${session.user.username}">
+                    郭小颖
+                </div>
+                <div class="row" style="font-size: 16px;margin-top: 20px" th:text="${session.user.mobile}">
+                    手机号：18715096913
+                </div>
+            </div>
+        </div>
+
+        <!--分割线-->
+        <hr style="border:1px solid lightgray "/>
+
+        <!--中奖号码-->
+        <div class="row">
+            <div class="col-xs-12" style="color: red">您今日幸运中奖号码为：</div>
+            <div class="row" style="margin-top: 15px">
+                <div class="col-xs-1"></div>
+              <div class="col-xs-10">
+                <div class="ball-item" >01</div>
+                <div class="ball-item" >11</div>
+                <div class="ball-item" >23</div>
+                <div class="ball-item" >14</div>
+                <div class="ball-item" >15</div>
+                <div class="ball-item" >21</div>
+                <div class="ball-item ball-blue" >06</div>
+                <div class="col-xs-1"></div>
+            </div>
+
+            </div>
+            <div style="float: right;right: 20px">
+                <input type="button" class="btn btn-default" value="购买立中大奖"  onclick="tiaozhuan('/cart/goToCart')">
+            </div>
+        </div>
+
+        <!--分割线-->
+        <hr style="border:1px solid lightgray ;margin-bottom: 5px;margin-top: 5px"/>
+
+        <!--累计中奖信息-->
+        <div class="row">
+            <div class="col-xs-6">
+                累计中奖次数:<span style="color: red">1024</span>
+            </div>
+            <div class="col-xs-6">
+                累计中奖金额：<span style="color: red">512万</span>
+            </div>
+        </div>
+
+        <!--分割线-->
+        <hr style="border:1px solid lightgray ;margin-bottom: 5px;margin-top: 5px"/>
+
+        <!--账户余额-->
+        <div>
+            账户余额：<span style="color: red" th:text="${session.user.Money}">1.00元</span>
+        </div>
+
+        <!--分割线-->
+        <hr style="border:1px solid lightgray;margin-bottom: 5px;margin-top: 5px "/>
+
+        <!--我的订单-->
+        <div onclick="tiaozhuan('/order/find')">
+            我的订单
+        </div>
+
+        <script>
+            function tiaozhuan(path) {
+                location.href=path;
+            }
+        </script>
+
+        <!--分割线-->
+        <hr style="border:1px solid lightgray;margin-bottom: 5px;margin-top: 5px "/>
+
+        <!--基本信息-->
+        <div >
+            基本信息
+        </div>
+
+        <!--分割线-->
+        <hr style="border:1px solid lightgray;margin-bottom: 5px;margin-top: 5px "/>
+
+        <!--设置-->
+        <div>
+            设置
+        </div>
+
+        <!--底部菜单栏-->
+        <div class="foot row">
+            <div class="col-xs-4" style="margin-top: 10px" onclick="location.href='/'">
+                <span class="glyphicon glyphicon-home"></span>
+                <p>首页</p>
+            </div>
+            <div class="col-xs-4" style="margin-top: 10px" onclick="location.href='/cart/selectUI'">
+                <span class="glyphicon glyphicon-shopping-cart"></span>
+                <p>选号</p>
+            </div>
+            <div class="col-xs-4" style="margin-top: 10px;color: red">
+                <span class="glyphicon glyphicon-user"></span>
+                <p>我</p>
+            </div>
+        </div>
+
+        <script>
+
+
+        </script>
+
+        <!--<div th:replace="~{common/menu :: #menu_div}">-->
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <script src="js/jquery-1.12.4.min.js" th:src="@{/js/jquery-1.12.4.min.js}"></script>
+    <script src="js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12 title"><h3>修改头像</h3></div>
+    </div>
+
+    <div style="margin-top: 50px;">
+        <img th:src="|@{/get}${session.user.headimg}|" class="img-thumbnail center-block">
+    </div>
+
+    <div>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="wenjian" class="form-control center-block" style="margin: 20px auto;" />
+
+            <input type="submit" class="btn btn-default center-block" value="点击上传"  />
+        </form>
+    </div>
+</div>
+</body>
+</html>

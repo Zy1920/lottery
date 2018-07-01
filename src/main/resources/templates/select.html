@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <script src="js/jquery-1.12.4.min.js" th:src="@{/js/jquery-1.12.4.min.js}"></script>
+    <script src="js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+    <style>
+       .title{
+           left: 0px;
+           top: 23px;
+           width: 360px;
+           height: 55px;
+           color: rgba(16, 16, 16, 1);
+           font-size: 18px;
+           text-align: center;
+           font-family: Microsoft Yahei;
+           background-color: lightgray;
+           line-height: 55px;
+       }
+
+       .col-xs-ball{
+           width: 12.5%;
+           float: left;
+           text-align: center;
+           margin-top: 5px;
+       }
+
+        .ball-blue{
+            color: blue;
+        }
+
+        .ball-blue-selected{
+            background-color: rgba(0,0,255,0.5);
+            color: white;
+            font-weight: bold;
+        }
+
+        .ball-red{
+            color: red;
+        }
+
+       .ball-red-selected{
+           background-color: rgba(255,0,0,0.5);
+           color: white;
+           font-weight: bold;
+       }
+
+
+
+        .foot{
+            text-align: center;
+            background-color: lightgray;
+            position: fixed;
+            left: 0px;
+            bottom: 0px;
+            width: 100%;
+        }
+
+       .ball-item{
+           width: 30px;
+           height: 30px;
+           line-height: 30px;
+           font-size: 14px;
+           text-align: center;
+           font-family: Roboto;
+           border: 1px solid rgba(187, 187, 187, 1);
+           border-radius: 100px;
+           display: inline-block;
+           margin-right: 5px;
+       }
+
+    </style>
+
+    <script>
+        // 页面加载完成会触发的函数
+       $(function () {
+           //红球被选中的逻辑
+           $(".ball-red").click(function () {
+               //1.先判断当前球是否被选中
+               var isSelected=$(this).is(".ball-red-selected");
+               //2.若被选中则取消选中状态
+               if (isSelected){
+                   $(this).removeClass("ball-red-selected");
+               }else {
+                   //3.若没有被选中,则判断球是否大于等于6,再修改样式
+                   if($(".ball-red-selected").length>=6){
+                       alert("只能选6个球哦！~~");
+                   }else{
+                       $(this).addClass("ball-red-selected");
+                   }
+               }
+           })
+
+           //蓝球被选中的逻辑
+           $(".ball-blue").click(function(){
+               //给选中的蓝球移除选中属性
+               $(".ball-blue-selected").removeClass("ball-blue-selected");
+               //给当前的蓝球增加选中属性
+               $(this).addClass("ball-blue-selected")
+           })
+
+
+           //1.机选按钮绑定点击事件
+           $("#randomBall").click(function () {
+               var arr=Array();
+           //2.获取要机选的数量
+              var count=$("#randomCount").val();
+               while (count>0){
+                   //3.随机产生1注彩票
+                   randomOne();
+                   //4.获取产生的号码
+                   var ball=getResult();
+                   //5.将产生的号码保存到数组中
+                   arr.push(ball);
+                   count--;
+               }
+               //6.发送给服务器去添加
+               sendToAdd(arr);
+           })
+
+           $("#addOne").click(function () {
+               var redLength=$(".ball-red-selected").length;
+               var blueLength=$(".ball-blue-selected").length;
+               //1. 若用户一个球都没有选择,直接点击添加那么我们先随机选择一注彩票
+               if (redLength==0&&blueLength==0){
+                   randomOne()
+               }
+               //2.先判断红球是否满足6个,若不满足则提示;判断蓝球是否满足1个,若不满足则提示
+               else if (redLength!=6&&blueLength!=1){
+                   alert("请选择6个红球，1个蓝球")
+               }else {
+                   //3.若红球6 蓝球1,则添加到购彩车中
+                   var one=getResult();
+                   var arr=Array();
+                   arr.push(one);
+                   //4.发送给服务器去添加ajax请求
+                   sendToAdd(arr);
+               }
+           })
+       })
+
+
+        //随机的选中一注双色球
+        function randomOne(){
+            //清空页面上所有被选中红球的样式
+            $(".ball-red-selected").removeClass("ball-red-selected");
+            //红球最多只能6个
+            while ($(".ball-red-selected").length<6) {
+                //随机获取一个红球
+                var i=Math.floor(Math.random()*33);
+                $($(".ball-red").get(i)).addClass("ball-red-selected");
+            }
+            //蓝球最多只能1个
+            //先删除被选中蓝球的样式
+            $(".ball-blue-selected").removeClass("ball-blue-selected");
+            var j=Math.floor(Math.random()*16);
+            $($(".ball-blue").get(j)).addClass("ball-blue-selected");
+        }
+
+        /**
+         * 获取用户选择的彩票结果
+         */
+        function getResult() {
+            //1.找出所有选中的红球
+            var redball="";
+            $(".ball-red-selected").each(function (i,one) {
+                //2.得到每一个红球里面的内容，并拼接在一起
+                redball+=","+$(one).text();
+            })
+            //3.截取字符串，拼装要发送给服务器的数据
+            redball=redball.substr(1);
+            //4.得到蓝球，获取蓝球中的内容
+            var blueball= $(".ball-blue-selected").text();
+            //5.红球蓝球的内容组合成一条json对象数据，并返回。
+            return {
+                "red":redball,
+                "blue":blueball
+            }
+        }
+
+        function sendToAdd(arr){
+            var url="/cart/add";
+            var balls={"balls":JSON.stringify(arr)};
+            $.post(url,balls,function (result) {
+                $(".badge").text(result.cartSize)
+                console.log(result.cartSize)
+            },"json")
+        }
+
+    </script>
+
+</head>
+<body>
+    <div class="container-fluid">
+        <!--标题-->
+        <div class="row title" style="background-color: lightpink">
+            <div class="col-xs-12">
+                <div style="float: left" onclick=history.back()>&lt;返回</div>
+                双色球
+            </div>
+        </div>
+
+        <!--分割线-->
+        <hr style="border:1px solid lightgray;margin-bottom: 5px;margin-top: 5px "/>
+
+        <div class="row" style="margin-top: 10px;margin-bottom: 10px">
+            <div class="col-xs-4">第2018017期</div>
+            <div class="col-xs-8" style="padding-left: 0px">
+                奖池<span style="color: red">4亿1523万</span>，可开出<span style="color: red" >83注</span>500万
+            </div>
+        </div>
+
+        <!--分割线-->
+        <hr style="border:1px solid lightgray;margin-bottom: 5px;margin-top: 5px "/>
+
+        <!--选球-->
+        <div  style="color: gray">
+            请选择6个红球，1个蓝球
+        </div>
+
+        <!--红球区域-->
+        <div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">01</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">02</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">03</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">04</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">05</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">06</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">07</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">08</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">09</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">10</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">11</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">12</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">13</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">14</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">15</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">16</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">17</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">18</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">19</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">20</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">21</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">22</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">23</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">24</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">25</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">26</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">27</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">28</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">29</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">30</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">31</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">32</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-red">33</div>
+            </div>
+
+        </div>
+
+        <!--清除浮动-->
+        <div class="clearfix"></div>
+
+        <!--蓝球区域-->
+        <div style="margin-top: 20px">
+            <div class="col-xs-ball">
+                <div class="ball-item ball-blue">01</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-blue">02</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-blue">03</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-blue">04</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-blue">05</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-blue">06</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-blue">07</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-blue">08</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-blue">09</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-blue">10</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-blue">11</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-blue">12</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-blue">13</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-blue">14</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-blue">15</div>
+            </div>
+            <div class="col-xs-ball">
+                <div class="ball-item ball-blue">16</div>
+            </div>
+
+
+
+        </div>
+
+        <!--清除浮动-->
+        <div class="clearfix"></div>
+
+        <!--添加按钮-->
+        <div style="margin-top: 15px" >
+            <input type="button" value="添加" class="btn btn-default pull-right" id="addOne"/>
+
+        </div>
+
+        <!--清除浮动-->
+        <div class="clearfix"></div>
+
+        <!--机选幸运号-->
+        <div style="margin-top: 15px">
+            <input id="randomBall" type="button" value="机选幸运号" class="btn btn-default pull-right" />
+            <select id="randomCount" class="form-control pull-right"  style="width: 40%">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+                <option>9</option>
+                <option>10</option>
+            </select>
+        </div>
+
+
+        <!--空白占位栏-->
+        <div style="margin-top: 60px"></div>
+
+
+        <script>
+            function tiaozhuan(path) {
+                location.href=path;
+            }
+
+        </script>
+        <!--底部菜单栏-->
+        <div class="foot" style="background-color: lightpink">
+            <div class="col-xs-6" style="margin-top: 10px" onclick=tiaozhuan("/cart/goToCart")>
+                <span class="glyphicon glyphicon-user"></span>
+                <span id="cartSizeId" class="badge" style="background-color: red;position: absolute;top: -10px"></span>
+                <p>购物车</p>
+            </div>
+            <div class="col-xs-6" style="margin-top: 10px" onclick=tiaozhuan("/cart/goToCart")>
+                <span class="glyphicon glyphicon-circle-arrow-down"></span>
+                <p>立即投注</p>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
